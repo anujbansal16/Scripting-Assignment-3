@@ -65,6 +65,25 @@ def tailF(keywords,length):
 		count+=1;
 	return 1
 
+def grepF(keywords, length):
+	if(length==3):
+		f = open(keywords[2], "r")
+		searchWord=keywords[1]
+		option=None
+	elif keywords[1]=="-i":
+		f = open(keywords[3], "r")
+		option=keywords[1]
+		searchWord=(keywords[2]).lower()
+	else:
+		return 1
+	for line in f:
+		if option is not None:
+			if searchWord in line.lower():
+				sys.stdout.write(line)
+		else:
+			if searchWord in line:
+				sys.stdout.write(line)
+
 def execCommand(keywords):
 	if(len(keywords)>1 and keywords[0]=="touch"):
 		print("Toucin a file")
@@ -106,6 +125,13 @@ def execCommand(keywords):
 	elif(	(len(keywords)==2 or len(keywords)==4)  and keywords[0]=="tail"):
 		try:
 		 	tailF(keywords,len(keywords))
+		except Exception as e:
+			print(e)
+		return 1	
+
+	elif((len(keywords)==3 or len(keywords)==4)  and keywords[0]=="grep"):
+		try:
+		 	grepF(keywords,len(keywords))
 		except Exception as e:
 			print(e)
 		return 1	
