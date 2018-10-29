@@ -1,3 +1,5 @@
+import setting
+import setting
 class Operations(object):
 	"""docstring for Operations"""
 	Guest="1. Register\n2. View Products\n3. Go to Home"	
@@ -7,10 +9,15 @@ class Operations(object):
 
 class Admin(object):
 	"""docstring for Admin"""
-
 	def __init__(self,id,name):
 		self.id=id
 		self.name=name
+	def addProduct(self,product):
+		if product.id in setting.productsList:
+			print("Cannot add product: "+str(product.id)+" already exist")
+		else:
+			setting.productsList[product.id]=product
+			print("Product with id "+str(product.id)+" added successfully")		
 
 class Product(object):
 	"""docstring for Product"""
@@ -38,10 +45,21 @@ class Customer(object):
 
 class Guest(object):
 	"""docstring for Guest"""
-	def __init__(self,gNo):
-		self.gNo = gNo
+	gNo=0
+	def __init__(self):
+		Guest.gNo+=1
 	def viewProducts():
 		pass
+	def getRegistered(self,customer):
+
+		if customer.id in setting.customersList:
+			print("Cannot Register: This userID already taken")
+			isSuccess=False
+		else:
+			setting.customersList[customer.id]=customer
+			print("Successfully Registered as a Customer. Please Login")		
+			isSuccess=True
+		return isSuccess
 		
 		
 		

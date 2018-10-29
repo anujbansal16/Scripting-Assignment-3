@@ -1,0 +1,2 @@
+productsList=dict()
+customersList=dict()

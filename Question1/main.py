@@ -1,12 +1,14 @@
 from classes import Product
+# from classes import productsList
 from classes import Customer
+# from classes import customersList
 from classes import Guest
 from classes import Operations
-import os
+from classes import Admin
 import pickle
 import utility
-def clear():
-	os.system("clear")
+
+
 
 def login(role):
 	print("Please provide your id")
@@ -17,7 +19,10 @@ def login(role):
 		return authCustomer(id)
 
 def guestLogin():
-	print(Operations.Guest)
+	utility.clear()
+	print("------------------------------WELCOME Guest----------------------------")
+	guest=Guest()
+	utility.guestOperations(guest)
 
 def customerLogin():
 	print("customer login")
@@ -31,36 +36,41 @@ def customerLogin():
 def adminLogin():
 	admin=login("admin")
 	if admin:
-		clear()
-		#success logged in perform operations
+		utility.clear()
 		print("------------------------------WELCOME Admin----------------------------")
-		print(Operations.Admin)
+		utility.adminOperations(admin)
 	else:
 		print("Invalid Id")
 
 def home():
 	choice=10
-	clear()
-	while choice!=4:
-		print("------------------------------WELCOME TO SUPERMARKET----------------------------")
+	# utility.clear()
+	while choice!='4':
+		print("----------------------------WELCOME TO SUPERMARKET--------------------------")
 		print("")
 		print("Tell us who you are? (Press the number)")
 		print("\t1.Guest?")
 		print("\t2.Customer?")
 		print("\t3.Admin?")
 		print("\t4.Exit?")
-		choice=input()
-		if choice==1:
+		choice=raw_input()
+		if choice=='1':
 			guestLogin()
-		elif choice==2:
+		elif choice=='2':
 			CustomerLogin()
-		elif choice==3:
+		elif choice=='3':
 			adminLogin()
 	else:
+		utility.persist()
 		print("Thanks for shopping..")
 
 utility.createAdmin(1,"anuj")
+utility.loadProducts()
+utility.loadCustomers()
 home()
+# print(productsList)
+# print(len(customersList))
+# print(customersList)
 
 
 

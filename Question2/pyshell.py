@@ -100,7 +100,6 @@ def findTabs(tabs):
 		for i in range(26):
 			res=res+chr(65+i)
 	elif res=="[:digit:]":
-		print("deb")
 		res=""
 		for i in range(10):
 			res=res+chr(ord('0')+i)
