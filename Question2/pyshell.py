@@ -2,6 +2,7 @@ import os
 import re
 #for printing formatted output without newline
 import sys
+from string import maketrans  
 
 def pwd():
 	return os.getcwd()
@@ -38,6 +39,107 @@ def headF(keywords,length):
 		sys.stdout.write(f.readline())
 	return 1
 
+def translateStr(intab, outtab, str):
+	trantab = maketrans(intab, outtab)
+	return str.translate(trantab)
+
+def findTabs(tabs):
+	reg=tabs[0]
+	res=tabs[1]
+	#########################################
+	if reg=="[:lower:]":
+		reg=""
+		for i in range(26):
+			reg=reg+chr(97+i)
+	elif reg=="[:upper:]":
+		reg=""
+		for i in range(26):
+			reg=reg+chr(65+i)
+	elif reg=="[:digit:]":
+		reg=""
+		for i in range(10):
+			reg=reg+chr(ord('0')+i)
+	elif reg[0]=="[" and reg[len(reg)-1]=="]":
+		before=""
+		after=""
+		beforeIndex=0
+		afterIndex=len(reg)-1
+		if "-" in reg:
+			if reg.find("-")-1>=1:
+				#before is a character
+				before=reg[reg.find("-")-1]
+				beforeIndex=reg.find("-")-1
+			if reg.find("-")+1<len(reg)-1:
+				after=reg[reg.find("-")+1];
+				afterIndex=reg.find("-")+1
+			if len(before)==0 or len(after)==0:
+				reg=reg[1:len(reg)-1]
+				# beforeIndex=0;
+				# afterIndex=len(reg)-1;
+			else:
+				#[a-e]=>abcde
+				regtemp=""
+				while ord(before)!=ord(after):
+					regtemp=regtemp+before;
+					before=chr(ord(before)+1)
+				regtemp=regtemp+after
+				if beforeIndex!=0 and afterIndex!=len(reg)-1:
+					regtemp=reg[1:beforeIndex]+regtemp
+					regtemp=regtemp+reg[afterIndex+1:len(reg)-1]
+				reg=regtemp
+		else:
+			#if not having - [ae]=>ae
+			reg=reg[1:len(reg)-1]
+	##################################
+	if res=="[:lower:]":
+		res=""
+		for i in range(26):
+			res=res+chr(97+i)
+	elif res=="[:upper:]":
+		res=""
+		for i in range(26):
+			res=res+chr(65+i)
+	elif res=="[:digit:]":
+		print("deb")
+		res=""
+		for i in range(10):
+			res=res+chr(ord('0')+i)
+	elif res[0]=="[" and res[len(res)-1]=="]":
+		before=""
+		after=""
+		beforeIndex=0
+		afterIndex=len(res)-1
+		if "-" in res:
+			if res.find("-")-1>=1:
+				#before is a character
+				before=res[res.find("-")-1]
+				beforeIndex=res.find("-")-1
+			if res.find("-")+1<len(res)-1:
+				after=res[res.find("-")+1];
+				afterIndex=res.find("-")+1
+			if len(before)==0 or len(after)==0:
+				res=res[1:len(res)-1]
+				# beforeIndex=0;
+				# afterIndex=len(res)-1;
+			else:
+				#[a-e]=>abcde
+				restemp=""
+				while ord(before)!=ord(after):
+					restemp=restemp+before;
+					before=chr(ord(before)+1)
+				restemp=restemp+after
+				if beforeIndex!=0 and afterIndex!=len(res)-1:
+					restemp=res[1:beforeIndex]+restemp
+					restemp=restemp+res[afterIndex+1:len(res)-1]
+				res=restemp
+		else:
+			#if not having - [ae]=>ae
+			res=res[1:len(res)-1]
+	
+	print(reg)
+	print(res)
+	return [reg,res]
+	
 def trF(keywords, length):
 	f=open(keywords[length-1], "r")
 	options=keywords[1]
@@ -46,13 +148,18 @@ def trF(keywords, length):
 		reg=re.compile(reg)
 		for line in f:
 			sys.stdout.write(reg.sub('',line))
+		return True
 	else:
 		reg=options
 		res=keywords[2]
-		for line in f:
-			sys.stdout.write(line.translate(reg,res))
-
-
+		tabs=[reg,res]
+		tabs=findTabs(tabs)
+		if len(tabs[0])!=len(tabs[1]):
+			return False;
+		else:
+			for line in f:
+				sys.stdout.write(translateStr(tabs[0],tabs[1],line))
+		return True
 
 
 def tailF(keywords,length):
@@ -141,8 +248,6 @@ def sedF(keywords,length):
 							replaced=reg.sub(res,line,1)		
 				else:
 					replaced=reg.sub(res,line,1)
-					# re.sub(^((.*?reg.*?){1})reg, "\1"+res, line)
-					
 				sys.stdout.write(replaced)
 		else:
 			print("Erro: Not valid command")
@@ -203,9 +308,11 @@ def execCommand(keywords):
 			print(e)
 		return 1	
 
-	elif((len(keywords)>=3)  and keywords[0]=="tr"):
+	elif((len(keywords)==4)  and keywords[0]=="tr"):
 		try:
-		 	trF(keywords,len(keywords))
+		 	isSuccess=trF(keywords,len(keywords))
+		 	if not(isSuccess):
+		 		print("Error: Problem in arguments")
 		except Exception as e:
 			print(e)
 		return 1	
