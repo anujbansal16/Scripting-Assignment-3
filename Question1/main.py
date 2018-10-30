@@ -6,6 +6,12 @@ from classes import Admin
 import pickle
 import utility
 
+def init():
+	utility.createAdmin(1,"anuj")
+	utility.loadProducts()
+	utility.loadCustomers()
+	utility.loadCarts()	
+
 def login(role):
 	print("Please provide your id")
 	id=raw_input()
@@ -67,7 +73,5 @@ def home():
 		utility.persist()
 		print("Thanks for shopping..")
 
-utility.createAdmin(1,"anuj")
-utility.loadProducts()
-utility.loadCustomers()
+init()
 home()

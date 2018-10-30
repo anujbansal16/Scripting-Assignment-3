@@ -7,12 +7,15 @@ from classes import Customer
 from classes import Guest
 from classes import Operations
 from classes import Admin
+from classes import Payment
 
 #test by removing clear
 
 F_ADMIN="admins.txt"
 F_CUSTOMER="customers.txt"
 F_PRODUCT="products.txt"
+F_PAYMENT="payment.txt"
+F_CART="cart.txt"
 
 def clear():
 	os.system("clear")
@@ -44,6 +47,41 @@ def authAdmin(id):
 	adminFile.close()
 	return None
 
+def getPaymentDetails(cid):
+	paymentFile=open(F_PAYMENT,"rb")
+	while True:
+		try:
+			payment=pickle.load(paymentFile)
+		except EOFError:
+			break
+		else:
+			if(payment.customerId==cid):
+				return payment
+	paymentFile.close()
+	return None
+	pass
+
+def makePayment(customer):
+	payment=getPaymentDetails(customer.id)
+	if payment:
+		payment.pay()
+	else:
+		print("-------Provide your card details------")
+		print("Enter your card number")
+		cno=raw_input()
+		print("Enter your name (as appeared on card)")
+		name=raw_input()
+		print("Enter card type")
+		cardType=raw_input()
+		if not(cno and name and cardType):
+			print("please enter valid information (all are mandatory )")
+		else:
+			payment=Payment(customer.id, name,cardType,cno)
+			paymentFile=open(F_PAYMENT,"ab")
+			pickle.dump(payment,paymentFile)
+			paymentFile.close()
+			payment.pay()
+
 def authCustomer(id):
 	return setting.customersList.get(id,None)
 
@@ -67,6 +105,18 @@ def loadCustomers():
 			break
 	customerFile.close()
 
+def loadCarts():
+	cartFile=open(F_CART,"rb")
+	while True:
+		try:
+			setting.cartsList=pickle.load(cartFile)
+			print(setting.cartsList)
+		except EOFError:
+			break
+	cartFile.close()
+
+
+
 def printdash():
 	print("------------------------------")
 
@@ -74,7 +124,7 @@ def viewProducts(person):
 	#polymorphism
 	clear()
 	print("---------ALL PRODUCTS---------")
-	print("ID\tNAME\tGROUP\tSUBGROUP\tPRICE")
+	print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
 	person.viewProducts()
 	printdash()
 
@@ -91,15 +141,54 @@ def searchProducts(customer):
 		print("No products found with: "+search)
 	else:
 		print("---------SEARCHED RESULTS for %s---------"%search)
-		print("ID\tNAME\tGROUP\tSUBGROUP\tPRICE")
+		print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
 		for prod in products:
 			prod.printProduct()
+
+def viewCart(customer):
+	cart=customer.getCart()
+	if cart:
+		cart.printCart()
+		return True
+	else:
+		print("Your cart is empty")
+		return False
+
+def deleteFromCart(customer):
+	clear()
+	if not(viewCart(customer)):
+		return False
+	print("Enter the product ID of product you wanna delete")
+	id=raw_input()
+	if id.isdigit():
+		product=customer.getProduct(int(id))
+		if product:
+			customer.deleteFromCart(product)
+		else:
+			print("No product found with id: "+pid)
+	else:
+		print("Product id should be a number")
+
+def addToCart(customer):
+	clear()
+	viewProducts(customer)
+	print("Enter the product ID of product you wanna add to cart")
+	id=raw_input()
+	if id.isdigit():
+		product=customer.getProduct(int(id))
+		if product:
+			customer.addToCart(product)
+			print("Added to Cart Succesfully")
+		else:
+			print("No product found with id: "+pid)
+	else:
+		print("Product id should be a number")
 
 def buyProducts(customer):
 	clear()
 	choice=10
-	while choice!='4':
-		clear()
+	while choice!='5':
+		# clear()
 		print("---------WElCOME "+(customer.name).upper()+"----------")
 		print("---------BUYING PANEL----------")
 		print(Operations.CustomerSub)
@@ -107,17 +196,22 @@ def buyProducts(customer):
 		try:
 			if choice=='1':
 				#ADD TO CART
-				viewProducts(customer)
+				addToCart(customer)
 				print("Press Enter to go back")
 				raw_input()
 			if choice=='2':
 				#DELETE FROM CART
-				buyProducts(customer)
+				deleteFromCart(customer)
 				print("Press Enter to go back")
 				raw_input()
 			if choice=='3':
+				#VIEW CART
+				viewCart(customer)
+				print("Press Enter to go back")
+				raw_input()
+			if choice=='4':
 				#MAKE PAYMENT
-				searchProducts(customer)
+				makePayment(customer)
 				print("Press Enter to go back")
 				raw_input()
 
@@ -215,7 +309,7 @@ def deleteProducts(admin):
 def adminOperations(admin):
 	choice=10
 	while choice!='7':
-		# clear()
+		clear()
 		print("---------WElCOME "+(admin.name).upper()+"----------")
 		print("---------ADMIN PANEL----------")
 		print(Operations.Admin)
@@ -341,10 +435,21 @@ def persistProducts():
 		print(e)
 	productFile.close()	
 
+def persistCarts():
+	cartFile=open(F_CART,"wb")
+	try:
+		pickle.dump(setting.cartsList,cartFile)
+	except Exception as e:
+		print(e)
+	cartFile.close()	
+
 def persist():
 	print(setting.productsList)
 	print(setting.customersList)
+	print(setting.cartsList)
 	if setting.productsList:
 		persistProducts()
 	if setting.customersList:
 		persistCustomers()
+	if setting.cartsList:
+		persistCarts()

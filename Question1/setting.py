@@ -1,3 +1,3 @@
 productsList=dict()
 customersList=dict()
-cart=dict()
+cartsList=dict()
