@@ -3,7 +3,7 @@ import setting
 class Operations(object):
 	"""docstring for Operations"""
 	Guest="1. Register\n2. View Products\n3. Go to Home"	
-	Customer="1. View Products\n2. Buy Products\n3. Search Product(by name)\n4. Logout"	
+	Customer="1. View Products\n2. Buy Products\n3. Search Product(by name)\n4. My orders\n5. Logout"	
 	CustomerSub="1. Add to Cart\n2. Delete from Cart\n3. View Cart\n4. Make Payment\n5. Go Back"	
 	Admin="1. View Products\n2. Add Products\n3. Delete Products\n4. Modify Products\n5. Make Shipment\n6. Confirm Delivery\n7. Logout"	
 		
@@ -63,6 +63,9 @@ class Customer(object):
 		for key in setting.productsList:
 			setting.productsList[key].printProduct()
 
+	def makePayment(self,payment):
+		payment.pay(self)
+
 	def searchProducts(self,name):
 		searchedProList=list()
 		for key in setting.productsList:
@@ -93,6 +96,8 @@ class Customer(object):
 					setting.cartsList.pop(self.id, None)
 					setting.cartsList[self.id]=cart
 					break
+			if(len(cart.products)==0):
+				setting.cartsList.pop(self.id, None)
 			if flag:
 				print("Product Removed from cart successfully")
 			else:
@@ -111,6 +116,16 @@ class Customer(object):
 			cart=Cart(self.id,1,[product],product.price)
 			setting.cartsList[self.id]=cart
 			# print("Product with id "+str(product.id)+" added successfully")
+	def myOrders(self):
+		myOrders=setting.myOrdersList.get(self.id,None)
+		if myOrders:
+			print("---------MY ORDERS---------")
+			print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
+			for prod in myOrders:
+				prod.printProduct()
+			print("")
+		else:
+			print("You haven't bought any product")
 		
 
 class Guest(object):
@@ -142,10 +157,26 @@ class Payment(object):
 		self.name=name
 		self.cardType=cardType
 		self.cardNo=cardNo
-	def pay(self):
-		print("Please Wait...")
-		print("%s\t%s\t%s\t%s"%(self.customerId,self.name,self.cardType,self.cardNo))
-		print("Payment Done Successfully")		
+	def pay(self,customer):
+		cart=customer.getCart()
+		if cart:
+			print("Please Wait...")
+			print("Amount paid: "+str(cart.total)+" Rs.")
+			print("Card Holder name: "+self.name)		
+			print("Card Number: "+self.cardNo)		
+			# print("%s\t\t%s\t\t%s\t\t%s"%(self.customerId,self.name,self.cardType,self.cardNo))
+			print("Payment Done Successfully")
+
+			#empty cart and populate my orders
+			myOrders=setting.myOrdersList.get(customer.id,None)
+			if myOrders:
+				setting.myOrdersList[customer.id]=setting.myOrdersList[customer.id]+cart.products
+			else:
+				setting.myOrdersList[customer.id]=cart.products
+			setting.cartsList.pop(customer.id, None)
+
+		else:
+			print("Please add products: Cart Empty")
 		
 class Cart(object):
 	"""docstring for Cart"""

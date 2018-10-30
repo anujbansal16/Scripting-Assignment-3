@@ -11,6 +11,7 @@ def init():
 	utility.loadProducts()
 	utility.loadCustomers()
 	utility.loadCarts()	
+	utility.loadMyOrders()	
 
 def login(role):
 	print("Please provide your id")

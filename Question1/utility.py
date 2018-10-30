@@ -16,6 +16,7 @@ F_CUSTOMER="customers.txt"
 F_PRODUCT="products.txt"
 F_PAYMENT="payment.txt"
 F_CART="cart.txt"
+F_MYORDER="myorders.txt"
 
 def clear():
 	os.system("clear")
@@ -64,7 +65,7 @@ def getPaymentDetails(cid):
 def makePayment(customer):
 	payment=getPaymentDetails(customer.id)
 	if payment:
-		payment.pay()
+		customer.makePayment(payment)
 	else:
 		print("-------Provide your card details------")
 		print("Enter your card number")
@@ -80,13 +81,16 @@ def makePayment(customer):
 			paymentFile=open(F_PAYMENT,"ab")
 			pickle.dump(payment,paymentFile)
 			paymentFile.close()
-			payment.pay()
+			customer.makePayment(payment)
 
 def authCustomer(id):
 	return setting.customersList.get(id,None)
 
 def loadProducts():
+	productFile=open(F_PRODUCT,"ab")
+	productFile.close()
 	productFile=open(F_PRODUCT,"rb")
+
 	while True:
 		try:
 			setting.productsList=pickle.load(productFile)
@@ -96,6 +100,8 @@ def loadProducts():
 	productFile.close()
 
 def loadCustomers():
+	customerFile=open(F_CUSTOMER,"ab")
+	customerFile.close()
 	customerFile=open(F_CUSTOMER,"rb")
 	while True:
 		try:
@@ -106,6 +112,8 @@ def loadCustomers():
 	customerFile.close()
 
 def loadCarts():
+	cartFile=open(F_MYORDER,"ab")
+	cartFile.close()
 	cartFile=open(F_CART,"rb")
 	while True:
 		try:
@@ -114,6 +122,18 @@ def loadCarts():
 		except EOFError:
 			break
 	cartFile.close()
+
+def loadMyOrders():
+	myOrderFile=open(F_MYORDER,"ab")
+	myOrderFile.close()
+	myOrderFile=open(F_MYORDER,"rb")
+	while True:
+		try:
+			setting.myOrdersList=pickle.load(myOrderFile)
+			print(setting.myOrdersList)
+		except EOFError:
+			break
+	myOrderFile.close()
 
 
 
@@ -183,6 +203,9 @@ def addToCart(customer):
 			print("No product found with id: "+pid)
 	else:
 		print("Product id should be a number")
+
+def myOrders(customer):
+	customer.myOrders()
 
 def buyProducts(customer):
 	clear()
@@ -355,7 +378,7 @@ def adminOperations(admin):
 
 def customerOperations(customer):
 	choice=10
-	while choice!='4':
+	while choice!='5':
 		# clear()
 		print("---------WElCOME "+(customer.name).upper()+"----------")
 		print("---------CUSTOMER PANEL----------")
@@ -373,6 +396,11 @@ def customerOperations(customer):
 			if choice=='3':
 				#search PRODUCT
 				searchProducts(customer)
+				print("Press Enter to go back")
+				raw_input()
+			if choice=='4':
+				#search PRODUCT
+				myOrders(customer)
 				print("Press Enter to go back")
 				raw_input()
 
@@ -443,13 +471,20 @@ def persistCarts():
 		print(e)
 	cartFile.close()	
 
+def persistMyOrders():
+	myOrderFile=open(F_MYORDER,"wb")
+	try:
+		pickle.dump(setting.myOrdersList,myOrderFile)
+	except Exception as e:
+		print(e)
+	myOrderFile.close()	
+	
+
 def persist():
 	print(setting.productsList)
 	print(setting.customersList)
 	print(setting.cartsList)
-	if setting.productsList:
-		persistProducts()
-	if setting.customersList:
-		persistCustomers()
-	if setting.cartsList:
-		persistCarts()
+	persistProducts()
+	persistCustomers()
+	persistCarts()
+	persistMyOrders()
