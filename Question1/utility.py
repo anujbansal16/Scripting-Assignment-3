@@ -63,25 +63,31 @@ def getPaymentDetails(cid):
 	pass
 
 def makePayment(customer):
+	clear()
 	payment=getPaymentDetails(customer.id)
-	if payment:
-		customer.makePayment(payment)
-	else:
-		print("-------Provide your card details------")
-		print("Enter your card number")
-		cno=raw_input()
-		print("Enter your name (as appeared on card)")
-		name=raw_input()
-		print("Enter card type")
-		cardType=raw_input()
-		if not(cno and name and cardType):
-			print("please enter valid information (all are mandatory )")
-		else:
-			payment=Payment(customer.id, name,cardType,cno)
-			paymentFile=open(F_PAYMENT,"ab")
-			pickle.dump(payment,paymentFile)
-			paymentFile.close()
+	cart=customer.getCart()
+	if cart:
+		if payment:
 			customer.makePayment(payment)
+		else:
+			print("-------Provide your card details------")
+			print("Enter your card number")
+			cno=raw_input()
+			print("Enter your name (as appeared on card)")
+			name=raw_input()
+			print("Enter card type")
+			cardType=raw_input()
+			if not(cno and name and cardType):
+				print("please enter valid information (all are mandatory )")
+			else:
+				payment=Payment(customer.id, name,cardType,cno)
+				paymentFile=open(F_PAYMENT,"ab")
+				pickle.dump(payment,paymentFile)
+				paymentFile.close()
+				customer.makePayment(payment)
+	else:
+		print("Please add products: Cart Empty")	
+	printdash()
 
 def authCustomer(id):
 	return setting.customersList.get(id,None)
@@ -90,7 +96,6 @@ def loadProducts():
 	productFile=open(F_PRODUCT,"ab")
 	productFile.close()
 	productFile=open(F_PRODUCT,"rb")
-
 	while True:
 		try:
 			setting.productsList=pickle.load(productFile)
@@ -143,14 +148,14 @@ def printdash():
 def viewProducts(person):
 	#polymorphism
 	clear()
-	print("---------ALL PRODUCTS---------")
-	print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
+	print("--------------------------------ALL PRODUCTS--------------------------------")
+	print("%-10s%-20s%-20s%-20s%-15s"%('ID','NAME','GROUP','SUBGROUP','PRICE'))
 	person.viewProducts()
 	printdash()
 
 def searchProducts(customer):
 	clear()
-	print("Search products by name")
+	print("Search Products(by name): "),
 	search=raw_input()
 	search=(search.strip()).lower()
 	if not(search):
@@ -160,12 +165,14 @@ def searchProducts(customer):
 	if not(products):
 		print("No products found with: "+search)
 	else:
-		print("---------SEARCHED RESULTS for %s---------"%search)
-		print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
+		print("---------------------------SEARCHED RESULTS for %s---------------------------"%search)
+		print("%-10s%-20s%-20s%-20s%-15s"%('ID','NAME','GROUP','SUBGROUP','PRICE'))
 		for prod in products:
 			prod.printProduct()
+	printdash()
 
 def viewCart(customer):
+	clear()
 	cart=customer.getCart()
 	if cart:
 		cart.printCart()
@@ -178,6 +185,7 @@ def deleteFromCart(customer):
 	clear()
 	if not(viewCart(customer)):
 		return False
+	printdash()
 	print("Enter the product ID of product you wanna delete")
 	id=raw_input()
 	if id.isdigit():
@@ -185,7 +193,7 @@ def deleteFromCart(customer):
 		if product:
 			customer.deleteFromCart(product)
 		else:
-			print("No product found with id: "+pid)
+			print("No product found with id: "+id)
 	else:
 		print("Product id should be a number")
 
@@ -200,21 +208,26 @@ def addToCart(customer):
 			customer.addToCart(product)
 			print("Added to Cart Succesfully")
 		else:
-			print("No product found with id: "+pid)
+			print("No product found with id: "+id)
 	else:
 		print("Product id should be a number")
+	printdash()
 
 def myOrders(customer):
+	clear()
 	customer.myOrders()
+	printdash()
 
 def buyProducts(customer):
 	clear()
 	choice=10
 	while choice!='5':
-		# clear()
+		clear()
 		print("---------WElCOME "+(customer.name).upper()+"----------")
 		print("---------BUYING PANEL----------")
 		print(Operations.CustomerSub)
+		printdash()
+		print("Make a choice: "),
 		choice=raw_input()
 		try:
 			if choice=='1':
@@ -225,11 +238,13 @@ def buyProducts(customer):
 			if choice=='2':
 				#DELETE FROM CART
 				deleteFromCart(customer)
+				printdash()
 				print("Press Enter to go back")
 				raw_input()
 			if choice=='3':
 				#VIEW CART
 				viewCart(customer)
+				printdash()
 				print("Press Enter to go back")
 				raw_input()
 			if choice=='4':
@@ -336,6 +351,8 @@ def adminOperations(admin):
 		print("---------WElCOME "+(admin.name).upper()+"----------")
 		print("---------ADMIN PANEL----------")
 		print(Operations.Admin)
+		printdash()
+		print("Make a choice: "),
 		choice=raw_input()
 		try:
 			if choice=='1':
@@ -375,14 +392,18 @@ def adminOperations(admin):
 
 		except Exception as e:
 			print(e)
+	else:
+		print("You have logged out.(press enter to go to home)")
 
 def customerOperations(customer):
 	choice=10
 	while choice!='5':
-		# clear()
+		clear()
 		print("---------WElCOME "+(customer.name).upper()+"----------")
 		print("---------CUSTOMER PANEL----------")
 		print(Operations.Customer)
+		printdash()
+		print("Make a choice: "),
 		choice=raw_input()
 		try:
 			if choice=='1':
@@ -406,17 +427,22 @@ def customerOperations(customer):
 
 		except Exception as e:
 			print(e)
+	else:
+		print("You have logged out.(press enter to go to home)")
+
 
 def guestOperations(guest):
 	choice=10
-	while choice!=3:
+	while choice!='3':
 		clear()
 		print("---------WELCOME GUEST----------")
 		print("---------GUEST PANEL----------")
 		print(Operations.Guest)
-		choice=input()
+		printdash()
+		print("Make a choice: "),
+		choice=raw_input()
 		try:
-			if choice==1:
+			if choice=='1':
 				clear()
 				print("------REGISTER-------")
 				print("Enter userId")
@@ -429,6 +455,7 @@ def guestOperations(guest):
 				phNo=raw_input()
 				if not(id and name and add and phNo):
 					print("please enter all information")
+					printdash()
 					print("Press Enter to go back")
 					raw_input()
 					continue
@@ -437,9 +464,10 @@ def guestOperations(guest):
 					raw_input()
 					#succesfully register now login
 					break;
+				printdash()
 				print("Press Enter to go back")
 				raw_input()
-			if choice==2:
+			if choice=='2':
 				viewProducts(guest)
 				print("Press Enter to go back")
 				raw_input()
@@ -481,9 +509,9 @@ def persistMyOrders():
 	
 
 def persist():
-	print(setting.productsList)
-	print(setting.customersList)
-	print(setting.cartsList)
+	# print(setting.productsList)
+	# print(setting.customersList)
+	# print(setting.cartsList)
 	persistProducts()
 	persistCustomers()
 	persistCarts()

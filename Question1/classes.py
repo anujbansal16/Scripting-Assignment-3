@@ -34,8 +34,7 @@ class Admin(object):
 	def modifyProduct(self,product,previousId):
 			setting.productsList.pop(previousId, None)
 			setting.productsList[product.id]=product
-			# print(setting.productsList)
-			# print(setting.productsList[product.id])
+			print("Product modified successfully")
 
 class Product(object):
 	"""docstring for Product"""
@@ -46,7 +45,7 @@ class Product(object):
 		self.subgroup=subgroup
 		self.price=price
 	def printProduct(self):
-		print("%d\t\t%s\t\t%s\t\t%s\t\t%f"%(self.id,self.name,self.group,self.subgroup,self.price))
+		print("%-10d%-20s%-20s%-20s%-15.2f"%(self.id,self.name,self.group,self.subgroup,self.price))
 
 class Customer(object):
 	"""docstring for Customer"""
@@ -119,11 +118,11 @@ class Customer(object):
 	def myOrders(self):
 		myOrders=setting.myOrdersList.get(self.id,None)
 		if myOrders:
-			print("---------MY ORDERS---------")
-			print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
+			print("--------------------------------MY ORDERS------------------------------------")
+			# print("ID\t\tNAME\t\tGROUP\t\tSUBGROUP\t\tPRICE")
+			print("%-10s%-20s%-20s%-20s%-15s"%('ID','NAME','GROUP','SUBGROUP','PRICE'))
 			for prod in myOrders:
 				prod.printProduct()
-			print("")
 		else:
 			print("You haven't bought any product")
 		
@@ -159,24 +158,24 @@ class Payment(object):
 		self.cardNo=cardNo
 	def pay(self,customer):
 		cart=customer.getCart()
-		if cart:
-			print("Please Wait...")
-			print("Amount paid: "+str(cart.total)+" Rs.")
-			print("Card Holder name: "+self.name)		
-			print("Card Number: "+self.cardNo)		
-			# print("%s\t\t%s\t\t%s\t\t%s"%(self.customerId,self.name,self.cardType,self.cardNo))
-			print("Payment Done Successfully")
+		# if cart:
+		print("Please Wait...")
+		print("Amount paid: "+str(cart.total)+" Rs.")
+		print("Card Holder name: "+self.name)		
+		print("Card Number: "+self.cardNo)		
+		# print("%s\t\t%s\t\t%s\t\t%s"%(self.customerId,self.name,self.cardType,self.cardNo))
+		print("Payment Done Successfully")
 
-			#empty cart and populate my orders
-			myOrders=setting.myOrdersList.get(customer.id,None)
-			if myOrders:
-				setting.myOrdersList[customer.id]=setting.myOrdersList[customer.id]+cart.products
-			else:
-				setting.myOrdersList[customer.id]=cart.products
-			setting.cartsList.pop(customer.id, None)
-
+		#empty cart and populate my orders
+		myOrders=setting.myOrdersList.get(customer.id,None)
+		if myOrders:
+			setting.myOrdersList[customer.id]=setting.myOrdersList[customer.id]+cart.products
 		else:
-			print("Please add products: Cart Empty")
+			setting.myOrdersList[customer.id]=cart.products
+		setting.cartsList.pop(customer.id, None)
+
+		# else:
+			# print("Please add products: Cart Empty")
 		
 class Cart(object):
 	"""docstring for Cart"""
