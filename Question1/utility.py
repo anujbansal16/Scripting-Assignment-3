@@ -516,3 +516,9 @@ def persist():
 	persistCustomers()
 	persistCarts()
 	persistMyOrders()
+
+def loadData():
+	loadProducts()
+	loadCustomers()
+	loadCarts()	
+	loadMyOrders()	

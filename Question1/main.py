@@ -8,10 +8,7 @@ import utility
 
 def init():
 	utility.createAdmin(1,"anuj")
-	utility.loadProducts()
-	utility.loadCustomers()
-	utility.loadCarts()	
-	utility.loadMyOrders()	
+	utility.loadData()
 
 def login(role):
 	print("Login: Please enter your id: "),
@@ -78,4 +75,9 @@ def home():
 		print("Thanks for shopping..")
 
 init()
-home()
+try:
+	home()	
+except Exception as e:
+	raise e
+except:
+	utility.persist()
