@@ -3,6 +3,7 @@ import re
 #for printing formatted output without newline
 import sys
 from string import maketrans  
+import difflib
 
 def pwd():
 	return os.getcwd()
@@ -253,6 +254,11 @@ def sedF(keywords,length):
 	else:
 		print("Error: Invalid Command")
 
+def diffF(keywords,length):
+	file1Lines=open(keywords[1],"r").readlines()
+	file2Lines=open(keywords[2],"r").readlines()
+	for line in difflib.unified_diff(file1Lines, file2Lines):
+		print(line),
 
 
 def execCommand(keywords):
@@ -322,6 +328,13 @@ def execCommand(keywords):
 		except Exception as e:
 			raise e
 		return 1	
+
+	elif((len(keywords)==3)  and keywords[0]=="diff"):
+		try:
+		 	diffF(keywords,len(keywords))
+		except Exception as e:
+			raise e
+		return 1	
 	
 	elif(keywords[0]=="exit"):
 		return 0
@@ -337,6 +350,6 @@ def main():
 
 os.system('clear')
 while 1==1:
-	print("Pyshell: "+pwd())
+	print("Pyshell: "+pwd()+"$"),
 	if(not(main())):
 		break;
