@@ -5,7 +5,7 @@ class Operations(object):
 	Guest="1. Register\n2. View Products\n3. Go to Home"	
 	Customer="1. View Products\n2. Buy Products\n3. Search Product(by name)\n4. My orders\n5. Logout"	
 	CustomerSub="1. Add to Cart\n2. Delete from Cart\n3. View Cart\n4. Make Payment\n5. Go Back"	
-	Admin="1. View Products\n2. Add Products\n3. Delete Products\n4. Modify Products\n5. Make Shipment\n6. Confirm Delivery\n7. Logout"	
+	Admin="1. View Products\n2. Add Products\n3. Delete Products\n4. Modify Products\n5. Make Shipment\n6. Confirm Delivery\n7. Orders by userID\n8. Logout"	
 		
 
 class Admin(object):
@@ -35,6 +35,18 @@ class Admin(object):
 			setting.productsList.pop(previousId, None)
 			setting.productsList[product.id]=product
 			print("Product modified successfully")
+	def prodByUserId(self,userid):
+		customer=setting.customersList.get(userid,None)
+		if customer:
+			print("----------------------------Customer Details----------------------------")
+			print("User id: " +userid)
+			print("User name: " +customer.name)
+			print("User address: " +customer.address)
+			print("User phone: " +customer.phNo)
+			customer.myOrders()
+		else:
+			print("No customer found with the user id: "+userid)
+
 
 class Product(object):
 	"""docstring for Product"""

@@ -257,6 +257,12 @@ def buyProducts(customer):
 			print(e)
 	pass
 	
+def prodByUserId(admin):
+	# clear()
+	print("---------Search User---------")
+	print("Enter id of user: "),
+	id=raw_input().strip()
+	admin.prodByUserId(id)
 
 def addProduct(admin):
 	clear()
@@ -346,8 +352,8 @@ def deleteProducts(admin):
 
 def adminOperations(admin):
 	choice=10
-	while choice!='7':
-		clear()
+	while choice!='8':
+		# clear()
 		print("---------WElCOME "+(admin.name).upper()+"----------")
 		print("---------ADMIN PANEL----------")
 		print(Operations.Admin)
@@ -382,6 +388,11 @@ def adminOperations(admin):
 				listProd_ID=modifyProduct(admin)
 				if listProd_ID:
 					admin.modifyProduct(listProd_ID[0],listProd_ID[1])
+				print("Press Enter to go back")
+				raw_input()
+			if choice=='7':
+				#MODIFY PRODUCT
+				prodByUserId(admin)
 				print("Press Enter to go back")
 				raw_input()
 			if choice=='15':
