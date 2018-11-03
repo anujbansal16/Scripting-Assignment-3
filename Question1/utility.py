@@ -28,10 +28,31 @@ def isfloat(value):
   except ValueError:
     return False
 
+def createNewAdmin():
+ 	print("Enter the id of admin: "),
+ 	id=raw_input()
+	print("Enter the name of admin: "),
+ 	name=raw_input()
+	try:
+		id=int(id)
+	except Exception as e:
+		print("Please provide id as number")
+		return None
+	else:
+		admin=authAdmin(id)
+		if admin:
+			print("Error: An admin already exists with this id")
+		else:
+			createAdmin(id,name)
+			print("Admin created Succesfully")
+
+
 def createAdmin(id,name):
 	admin=Admin(id,name)
-	adminFile=open(F_ADMIN,"wb")
-	pickle.dump(admin,adminFile)
+	adminFile=open(F_ADMIN,"ab")
+	checkAdmin=authAdmin(id)
+	if not(checkAdmin):
+		pickle.dump(admin,adminFile)
 	adminFile.close()
 
 def authAdmin(id):
@@ -258,7 +279,7 @@ def buyProducts(customer):
 	pass
 	
 def prodByUserId(admin):
-	# clear()
+	clear()
 	print("---------Search User---------")
 	print("Enter id of user: "),
 	id=raw_input().strip()
@@ -352,8 +373,8 @@ def deleteProducts(admin):
 
 def adminOperations(admin):
 	choice=10
-	while choice!='8':
-		# clear()
+	while choice!='9':
+		clear()
 		print("---------WElCOME "+(admin.name).upper()+"----------")
 		print("---------ADMIN PANEL----------")
 		print(Operations.Admin)
@@ -390,9 +411,30 @@ def adminOperations(admin):
 					admin.modifyProduct(listProd_ID[0],listProd_ID[1])
 				print("Press Enter to go back")
 				raw_input()
+			if choice=='5':
+				#Create admin
+				createNewAdmin()
+				raw_input()
+			if choice=='8':
+				#all shipments
+				clear()
+				print("--------------------------------------------------------------------------------------------------------------------")
+				print("Below items have been shipped succesfully.")
+				admin.allShipments()
+				print("Press Enter to go back")
+				raw_input()
 			if choice=='7':
-				#MODIFY PRODUCT
+				#search prod by userid
 				prodByUserId(admin)
+				printdash()
+				print("Press Enter to go back")
+				raw_input()
+			if choice=='6':
+				#all deliveries
+				clear()
+				print("--------------------------------------------------------------------------------------------------------------------")
+				print("Below items have been delivered succesfully.")
+				admin.allShipments()
 				print("Press Enter to go back")
 				raw_input()
 			if choice=='15':

@@ -5,7 +5,7 @@ class Operations(object):
 	Guest="1. Register\n2. View Products\n3. Go to Home"	
 	Customer="1. View Products\n2. Buy Products\n3. Search Product(by name)\n4. My orders\n5. Logout"	
 	CustomerSub="1. Add to Cart\n2. Delete from Cart\n3. View Cart\n4. Make Payment\n5. Go Back"	
-	Admin="1. View Products\n2. Add Products\n3. Delete Products\n4. Modify Products\n5. Make Shipment\n6. Confirm Delivery\n7. Orders by userID\n8. Logout"	
+	Admin="1. View Products\n2. Add Products\n3. Delete Products\n4. Modify Products\n5. Create Admins\n6. Confirm Delivery\n7. Search Orders by userID\n8. Make Shipment\n9. Logout"	
 		
 
 class Admin(object):
@@ -47,6 +47,24 @@ class Admin(object):
 		else:
 			print("No customer found with the user id: "+userid)
 
+	def allShipments(self):
+		print("--------------------------------------------------------------------------------------------------------------------")
+		orders=setting.myOrdersList
+		if len(orders)==0:
+			print("Products are not bought by any customer")
+		else:
+			print("%-15s%-15s%-15s%-15s%-10s%-20s%-20s%-15s"%('USERID','USERNAME','USER-ADDRESS','USER PHONE','PRODUCTID','PRODUCTNAME','GROUP','PRICE'))
+			revenue=0
+			count=0
+			for cid in setting.myOrdersList:
+				customer=setting.customersList.get(cid,None)
+				for prod in orders[cid]:
+					revenue+=prod.price
+					count+=1
+					print("%-15s%-15s%-15s%-15s%-10d%-20s%-20s%-15.2f"%(customer.id,customer.name,customer.address,customer.phNo,prod.id,prod.name,prod.group,prod.price))
+			print("--------------------------------------------------------------------------------------------------------------------")					
+			print("%-35s%-15s%-15s%-10s%-20s%-20s"%('Total Products= '+str(count),'','','','','Total revenue= '+str(revenue)+ ' Rs'))
+			print("--------------------------------------------------------------------------------------------------------------------")					
 
 class Product(object):
 	"""docstring for Product"""
