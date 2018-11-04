@@ -413,6 +413,8 @@ def adminOperations(admin):
 				raw_input()
 			if choice=='5':
 				#Create admin
+				clear()
+				print("--------------CREATING ADMIN--------------")
 				createNewAdmin()
 				raw_input()
 			if choice=='8':
