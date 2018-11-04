@@ -5,6 +5,12 @@ import sys
 from string import maketrans  
 import difflib
 
+#grep with -i
+#head default 10 -n -c too
+#tail default 10 -n -c too
+#tr all cases but same length
+#sed i g number 
+
 def pwd():
 	return os.getcwd()
 
@@ -136,8 +142,8 @@ def findTabs(tabs):
 			#if not having - [ae]=>ae
 			res=res[1:len(res)-1]
 	
-	print(reg)
-	print(res)
+	# print(reg)
+	# print(res)
 	return [reg,res]
 	
 def trF(keywords, length):
@@ -174,10 +180,9 @@ def tailF(keywords,length):
 		if option=="-n":
 			f=open(keywords[3], "r")
 		elif option=="-c":
-			print("hell")
 			f=open(keywords[3], "rb")		
 			f.seek(-numLineORChar,2);
-			print(f.read(numLineORChar))	
+			sys.stdout.write(f.read(numLineORChar))	
 			return 1
 		else:
 			return 1
